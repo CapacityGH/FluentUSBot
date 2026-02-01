@@ -1,15 +1,18 @@
 ﻿using FluentUSBot.Services;
-using System.Text.Json;
 using Telegram.Bot;
 
 namespace FluentUSBot
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            var config = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText("appsettings.json"));
-            var botToken = config["TelegramBotToken"];
+            var botToken = Environment.GetEnvironmentVariable("TelegramBotToken");
+            if (string.IsNullOrWhiteSpace(botToken))
+            {
+                Console.WriteLine("Error: TelegramBotToken is not set");
+                return;
+            }
 
             var botClient = new TelegramBotClient(botToken);
             using var cts = new CancellationTokenSource();
@@ -21,14 +24,10 @@ namespace FluentUSBot
                 (client, update, token) => handler.HandleUpdateAsync(update, token),
                 (client, exception, token) => handler.HandleErrorAsync(exception, token),
                 cancellationToken: cts.Token
-            );  
+            );
 
             Console.WriteLine("FluentUS Bot is started. Click Enter to exit");
-            Console.ReadLine();
-            cts.Cancel();
-
+            await Task.Delay(-1);
         }
     }
-
-
 }

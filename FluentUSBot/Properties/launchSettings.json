@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "FluentUSBot": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "TelegramBotToken": "" // Your Telegram Bot Token
+      }
+    }
+  }
+}

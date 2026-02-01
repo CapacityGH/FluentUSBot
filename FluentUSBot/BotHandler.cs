@@ -38,6 +38,12 @@ namespace FluentUSBot
             }
             else if (message.StartsWith("/word"))
             {
+                if (message.Length < 6)
+                {
+                    await _botClient.SendMessage(chatId, "Please provide a word after the /word command. Example: /word example");
+                    return;
+                }
+
                 var word = message.Substring(6).Trim();
                 var data = await _freeDictionaryService.GetWordDataAsync(word);
                 
