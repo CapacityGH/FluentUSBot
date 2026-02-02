@@ -1,4 +1,6 @@
-﻿using FluentUSBot.Services;
+﻿using FluentUSBot.Bot;
+using FluentUSBot.Commands;
+using FluentUSBot.Services;
 using Telegram.Bot;
 
 namespace FluentUSBot
@@ -19,7 +21,16 @@ namespace FluentUSBot
 
             var freeDictionaryService = new FreeDictionaryService();
 
-            var handler = new BotHandler(botClient, freeDictionaryService);
+            var commands = new IBotCommand[]
+            {
+                new WordCommand(botClient, freeDictionaryService),
+                new StartCommand(botClient, freeDictionaryService),
+                new RandomCommand(botClient, freeDictionaryService)
+            };
+
+            var router = new CommandRouter(commands);
+            var handler = new BotHandler(router);
+
             botClient.StartReceiving(
                 (client, update, token) => handler.HandleUpdateAsync(update, token),
                 (client, exception, token) => handler.HandleErrorAsync(exception, token),
@@ -28,6 +39,8 @@ namespace FluentUSBot
 
             Console.WriteLine("FluentUS Bot is started. Click Enter to exit");
             await Task.Delay(-1);
+
+            //cts.Cancel();
         }
     }
 }
